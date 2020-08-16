@@ -19,11 +19,11 @@ import kotlin.jvm.JvmName
 
 data class ClientResponse<T>(
 //    val response: Response,
-    val headers: Map<String, String>,
-    val data: T
+        val headers: Map<String, String>,
+        val data: T
 );
 
-class HkClient(val httpClientEngine: HttpClientEngine): CoroutineScope, Closeable {
+class HkClient(val httpClientEngine: HttpClientEngine) : CoroutineScope, Closeable {
     val httpClient by lazy {
         HttpClient(httpClientEngine) {
             install(JsonFeature) {
@@ -35,7 +35,7 @@ class HkClient(val httpClientEngine: HttpClientEngine): CoroutineScope, Closeabl
     override val coroutineContext: CoroutineContext = httpClientEngine.coroutineContext + Job(httpClientEngine.coroutineContext[Job])
 
     @JsName("createUser")
-    suspend fun createUser(user: UserProfile, token: String?, inviteId: String?, redirect: String?): UserProfile {
+    suspend fun createUser(user: UserProfile, token: String? = null, inviteId: String? = null, redirect: String? = null): UserProfile {
         //this.trackEvent('api', 'api_users_create');
 
         val queryParams = hashMapOf<String, String>()
@@ -44,17 +44,21 @@ class HkClient(val httpClientEngine: HttpClientEngine): CoroutineScope, Closeabl
         inviteId?.let { queryParams.put("iid", inviteId) }
         redirect?.let { queryParams.put("r", redirect) }
 
-        return doPost<UserProfile>("${this.getUsersRoute()}${buildQueryString(queryParams)}", user)
+        return doPost("${this.getUsersRoute()}${buildQueryString(queryParams)}", user)
     }
 
     /*****
      * URL Path
      */
-    var url = ""
-    val urlVersion = "/api/v1"
+    var _url = ""
+    val _urlVersion = "/api/v1"
+
+    fun setUrl(url: String) {
+        this._url = url;
+    }
 
     fun getBaseRoute(): String {
-        return "${this.url}${this.urlVersion}"
+        return "${this._url}${this._urlVersion}"
     }
 
     fun getUsersRoute(): String {
@@ -79,10 +83,10 @@ class HkClient(val httpClientEngine: HttpClientEngine): CoroutineScope, Closeabl
     suspend inline fun <reified T> doPostWithResponse(urlPath: String, bodyString: Any): ClientResponse<T> {
         // Call URL
 //        const response = await fetch(url, this.getOptions(options));
-                val message = this.httpClient.post<T> {
-                    url(urlPath)
-                    contentType(ContentType.Application.Json)
-                    body = bodyString
+        val message = this.httpClient.post<T> {
+            url(urlPath)
+            contentType(ContentType.Application.Json)
+            body = bodyString
         }
 
         return ClientResponse(

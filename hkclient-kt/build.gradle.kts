@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform") version "1.3.72"
     id("net.akehurst.kotlin.kt2ts") version "1.6.0"
+    kotlin("plugin.serialization") version "1.3.72"
 }
 
 group = "org.example"
@@ -59,6 +60,9 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation("io.ktor:ktor-client-mock-jvm:$ktor_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.8")
+                implementation("io.ktor:ktor-client-json-jvm:$ktor_version")
+                implementation("io.ktor:ktor-client-serialization-jvm:$ktor_version")
             }
         }
         val jsMain by getting {
