@@ -1,6 +1,7 @@
 package com.hungknow
 
 import com.hungknow.models.UserProfile
+import com.hungknow.utils.buildQueryString
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.features.json.JsonFeature
@@ -13,6 +14,8 @@ import io.ktor.http.contentType
 import io.ktor.utils.io.core.Closeable
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
+import kotlin.js.JsName
+import kotlin.jvm.JvmName
 
 data class ClientResponse<T>(
 //    val response: Response,
@@ -31,13 +34,31 @@ class HkClient(val httpClientEngine: HttpClientEngine): CoroutineScope, Closeabl
 
     override val coroutineContext: CoroutineContext = httpClientEngine.coroutineContext + Job(httpClientEngine.coroutineContext[Job])
 
-    fun createUser(user: UserProfile, token: String, inviteId: String, redirect: String) {
+    @JsName("createUser")
+    suspend fun createUser(user: UserProfile, token: String?, inviteId: String?, redirect: String?): UserProfile {
         //this.trackEvent('api', 'api_users_create');
-        launch {
-            withContext(coroutineContext) {
-                doPostWithResponse<UserProfile>("", "")
-            }
-        }
+
+        val queryParams = hashMapOf<String, String>()
+
+        token?.let { queryParams.put("t", token) }
+        inviteId?.let { queryParams.put("iid", inviteId) }
+        redirect?.let { queryParams.put("r", redirect) }
+
+        return doPost<UserProfile>("${this.getUsersRoute()}${buildQueryString(queryParams)}", user)
+    }
+
+    /*****
+     * URL Path
+     */
+    var url = ""
+    val urlVersion = "/api/v1"
+
+    fun getBaseRoute(): String {
+        return "${this.url}${this.urlVersion}"
+    }
+
+    fun getUsersRoute(): String {
+        return "${this.getBaseRoute()}/users"
     }
 
     /***
@@ -50,8 +71,12 @@ class HkClient(val httpClientEngine: HttpClientEngine): CoroutineScope, Closeabl
 ////        const headers = parseAndMergeNestedHeaders(response.headers);
 //
 //    }
+    suspend inline fun <reified T> doPost(urlPath: String, bodyString: Any): T {
+        var clientResponse = doPostWithResponse<T>(urlPath, bodyString)
+        return clientResponse.data
+    }
 
-    suspend inline fun <reified T> doPostWithResponse(urlPath: String, bodyString: String) {
+    suspend inline fun <reified T> doPostWithResponse(urlPath: String, bodyString: Any): ClientResponse<T> {
         // Call URL
 //        const response = await fetch(url, this.getOptions(options));
                 val message = this.httpClient.post<T> {
@@ -59,6 +84,11 @@ class HkClient(val httpClientEngine: HttpClientEngine): CoroutineScope, Closeabl
                     contentType(ContentType.Application.Json)
                     body = bodyString
         }
+
+        return ClientResponse(
+                data = message,
+                headers = mapOf()
+        )
 //        const headers = parseAndMergeNestedHeaders(response.headers);
 
     }
