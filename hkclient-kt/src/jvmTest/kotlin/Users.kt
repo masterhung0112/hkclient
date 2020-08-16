@@ -1,3 +1,4 @@
+import com.hungknow.HkClientApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -5,18 +6,32 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
+import org.junit.*
 import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class Users {
     //    var store: Store
-    lateinit var testHelper: TestHelper
-
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
+
+    companion object {
+        lateinit var testHelper: TestHelper
+        lateinit var hkClientApp: HkClientApp
+
+        @BeforeClass
+        fun beforeAlL() {
+            testHelper = TestHelper()
+            testHelper.initBasic()
+
+            hkClientApp = HkClientApp()
+        }
+
+        @AfterClass
+        fun AfterAll() {
+//            testHelper.Te?
+        }
+    }
 
     @Before
     fun setUp() {
@@ -29,19 +44,18 @@ class Users {
         mainThreadSurrogate.close()
     }
 
-//    @BeforeClass
-//    fun beforeAlL() {
-//        testHelper = TestHelper()
-//        testHelper.initBasic()
-//    }
-
     @Test
     fun testCreateUserClientSuccess() = runBlockingTest {
         val userToCreate = TestHelper.fakeUser();
-        val testHelper = TestHelper()
+        testHelper = TestHelper()
         testHelper.initBasic()
 
         val user = testHelper.basicClient.createUser(userToCreate)
         assertNotNull(user)
+
+        hkClientApp = HkClientApp()
+        var outputUser = hkClientApp.Users().createUser(userToCreate)
+        assertNotNull(outputUser)
+        assertEquals(outputUser.id, "idfromme")
     }
 }

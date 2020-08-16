@@ -36,6 +36,8 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:$ktor_version")
                 implementation("io.ktor:ktor-client-json:$ktor_version")
                 implementation("io.ktor:ktor-client-serialization:$ktor_version")
+                implementation("org.reduxkotlin:redux-kotlin-threadsafe:0.5.3")
+                implementation("org.reduxkotlin:redux-kotlin-thunk:0.5.3")
             }
         }
         val commonTest by getting {
@@ -53,6 +55,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-apache:$ktor_version")
                 implementation("io.ktor:ktor-client-json-jvm:$ktor_version")
                 implementation("io.ktor:ktor-client-serialization-jvm:$ktor_version")
+                implementation("org.reduxkotlin:redux-kotlin-threadsafe-jvm:0.5.3")
             }
         }
         val jvmTest by getting {
@@ -63,6 +66,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.8")
                 implementation("io.ktor:ktor-client-json-jvm:$ktor_version")
                 implementation("io.ktor:ktor-client-serialization-jvm:$ktor_version")
+                implementation("org.reduxkotlin:redux-kotlin-threadsafe-jvm:0.5.3")
             }
         }
         val jsMain by getting {
