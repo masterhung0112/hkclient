@@ -6,6 +6,8 @@ plugins {
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
+val ktor_version:String by project
+
 repositories {
     google()
     mavenCentral()
@@ -35,6 +37,26 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation("io.ktor:ktor-client-mock:$ktor_version")
+            }
+        }
+        val jvmMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-jdk8"))
+                implementation("io.ktor:ktor-client-apache:$ktor_version")
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
+                implementation("io.ktor:ktor-client-mock-jvm:$ktor_version")
+            }
+        }
+        val jsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+                implementation("io.ktor:ktor-client-js:$ktor_version")
             }
         }
     }
