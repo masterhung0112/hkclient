@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.3.72"
-    id("net.akehurst.kotlin.kt2ts") version("1.6.0")
+    id("net.akehurst.kotlin.kt2ts") version "1.6.0"
 }
 
 group = "org.example"
@@ -31,6 +31,10 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
+                implementation("io.ktor:ktor-client-core:$ktor_version")
+                implementation("io.ktor:ktor-client-json:$ktor_version")
+                implementation("io.ktor:ktor-client-serialization:$ktor_version")
             }
         }
         val commonTest by getting {
@@ -43,7 +47,11 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
                 implementation("io.ktor:ktor-client-apache:$ktor_version")
+                implementation("io.ktor:ktor-client-json-jvm:$ktor_version")
+                implementation("io.ktor:ktor-client-serialization-jvm:$ktor_version")
             }
         }
         val jvmTest by getting {
@@ -56,7 +64,11 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-js"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
                 implementation("io.ktor:ktor-client-js:$ktor_version")
+                implementation("io.ktor:ktor-client-json-js:$ktor_version")
+                implementation("io.ktor:ktor-client-serialization-js:$ktor_version")
+                implementation(npm("text-encoding"))
             }
         }
     }
