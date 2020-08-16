@@ -1,0 +1,5 @@
+build/
+target/
+.gradle/
+node_modules/
+.idea/
