@@ -20,6 +20,7 @@ class Users {
         lateinit var hkClientApp: HkClientApp
 
         @BeforeClass
+        @JvmStatic
         fun beforeAlL() {
             testHelper = TestHelper()
             testHelper.initBasic()
@@ -28,6 +29,7 @@ class Users {
         }
 
         @AfterClass
+        @JvmStatic
         fun AfterAll() {
 //            testHelper.Te?
         }
@@ -46,9 +48,7 @@ class Users {
 
     @Test
     fun testCreateUserClientSuccess() = runBlockingTest {
-        val userToCreate = TestHelper.fakeUser();
-        testHelper = TestHelper()
-        testHelper.initBasic()
+        val userToCreate = TestHelper.fakeUser()
 
         val user = testHelper.basicClient.createUser(userToCreate)
         assertNotNull(user)
