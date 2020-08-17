@@ -1,4 +1,5 @@
 import com.hungknow.HkClient
+import com.hungknow.HkClientApp
 import com.hungknow.models.UserProfile
 import com.hungknow.utils.Helpers
 import io.ktor.client.engine.mock.MockEngine
@@ -11,6 +12,7 @@ import kotlinx.serialization.json.Json
 
 class TestHelper {
     lateinit var basicClient: HkClient
+    lateinit var hkClientApp: HkClientApp
 
     constructor() {
 //        this.basicClient = null;
@@ -37,6 +39,7 @@ class TestHelper {
             }
         }
         val client = HkClient(MockEngine(mockEngineConfig))
+        hkClientApp = HkClientApp(MockEngine(mockEngineConfig))
 
         client.setUrl(DEFAULT_SERVER);
 

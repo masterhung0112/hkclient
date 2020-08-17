@@ -1,4 +1,5 @@
 import com.hungknow.HkClientApp
+import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -24,8 +25,6 @@ class Users {
         fun beforeAlL() {
             testHelper = TestHelper()
             testHelper.initBasic()
-
-            hkClientApp = HkClientApp()
         }
 
         @AfterClass
@@ -50,11 +49,10 @@ class Users {
     fun testCreateUserClientSuccess() = runBlockingTest {
         val userToCreate = TestHelper.fakeUser()
 
-        val user = testHelper.basicClient.createUser(userToCreate)
-        assertNotNull(user)
+//        val user = testHelper.basicClient.createUser(userToCreate)
+//        assertNotNull(user)
 
-        hkClientApp = HkClientApp()
-        var outputUser = hkClientApp.Users().createUser(userToCreate)
+        var outputUser = testHelper.hkClientApp.Users().createUser(userToCreate)
         assertNotNull(outputUser)
         assertEquals(outputUser.id, "idfromme")
     }
