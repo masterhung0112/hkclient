@@ -12,7 +12,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class Users {
+class UsersTest {
     //    var store: Store
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
 

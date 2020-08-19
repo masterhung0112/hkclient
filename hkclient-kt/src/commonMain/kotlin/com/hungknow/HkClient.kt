@@ -24,6 +24,8 @@ data class ClientResponse<T>(
 );
 
 class HkClient(val httpClientEngine: HttpClientEngine) : CoroutineScope, Closeable {
+    var token = ""
+
     val httpClient by lazy {
         HttpClient(httpClientEngine) {
             install(JsonFeature) {

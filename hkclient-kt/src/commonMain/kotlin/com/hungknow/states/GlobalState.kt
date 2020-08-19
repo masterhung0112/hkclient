@@ -5,10 +5,10 @@ import org.reduxkotlin.Reducer
 
 @Serializable
 data class GlobalState(
-//        val entities: EntityState = EntityState(),
-val users: UsersState = UsersState()
+        val entities: EntityState = EntityState()
+//val users: UsersState = UsersState()
 )
 
-data class GlobalReducers(
-        val reducers: Reducer<UsersState>
-)
+//data class GlobalReducers(
+//        val reducers: Reducer<UsersState>
+//)

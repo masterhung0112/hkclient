@@ -3,6 +3,8 @@ package com.hungknow.utils
 import kotlin.math.floor
 import kotlin.random.Random
 
+val HTTP_UNAUTHORIZED = 401
+
 external fun encodeURIComponent(str: String): String
 
 fun buildQueryString(parameters: Map<String, String>): String {

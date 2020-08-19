@@ -1,7 +1,6 @@
 package com.hungknow
 
 import com.hungknow.services.UserService
-import com.hungknow.states.GlobalReducers
 import com.hungknow.states.GlobalState
 import io.ktor.client.engine.HttpClientEngine
 import org.reduxkotlin.*
@@ -65,12 +64,14 @@ class HkClientApp {
 
     fun globalReducer(state: GlobalState, action: Any): GlobalState {
         var hasChange = false
-        val usersState = this.userService.mainReducer(state.users, action)
-        hasChange = hasChange || usersState != state.users
+        val usersState = this.userService.mainReducer(state.entities.users, action)
+        hasChange = hasChange || usersState != state.entities.users
 
         if (hasChange) {
             return state.copy(
-                    users = usersState
+                    entities = state.entities.copy(
+                        users = usersState
+                    )
             )
         }
         return state
