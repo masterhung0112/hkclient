@@ -13,9 +13,6 @@ import kotlin.reflect.KFunction
 
 class UserService(private val hkClient: HkClient) : IStateService<UsersState>, CoroutineScope {
 
-//    lateinit var userReducer: Reducer<UsersState>
-//    lateinit var actionMap: Map<String, KFunction<Any>>
-
     lateinit var store: Store<GlobalState>
 
     override fun setGlobalStore(store: Store<GlobalState>) {

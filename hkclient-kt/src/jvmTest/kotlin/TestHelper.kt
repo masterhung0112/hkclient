@@ -27,17 +27,17 @@ class TestHelper {
 //        this.basicScheme = null;
     }
 
-    fun createClient(): HkClient {
-        var mockEngineConfig = MockEngineConfig()
-        mockEngineConfig.addHandler { request ->
-            when (request.url.fullPath) {
-                "/api/v1/users" -> {
-                    val responseHeaders = headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))
-                    respond(Json.stringify(UserProfile.serializer(), UserProfile()), headers = responseHeaders)
-                }
-                else -> error("Error for else %s".format(request.url.fullPath))
-            }
-        }
+    fun createClient(mockEngineConfig: MockEngineConfig): HkClient {
+//        var mockEngineConfig = MockEngineConfig()
+//        mockEngineConfig.addHandler { request ->
+//            when (request.url.fullPath) {
+//                "/api/v1/users" -> {
+//                    val responseHeaders = headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))
+//                    respond(Json.stringify(UserProfile.serializer(), UserProfile()), headers = responseHeaders)
+//                }
+//                else -> error("Error for else %s".format(request.url.fullPath))
+//            }
+//        }
         val client = HkClient(MockEngine(mockEngineConfig))
         hkClientApp = HkClientApp(MockEngine(mockEngineConfig))
 
@@ -46,7 +46,8 @@ class TestHelper {
         return client;
     }
 
-    fun initBasic(client: HkClient = createClient()) {
+    fun initBasic(mockEngineConfig: MockEngineConfig = MockEngineConfig()) {
+        val client = createClient(mockEngineConfig)
         client.setUrl(DEFAULT_SERVER);
         this.basicClient = client
 
