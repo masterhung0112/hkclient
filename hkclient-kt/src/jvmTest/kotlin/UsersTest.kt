@@ -55,7 +55,7 @@ class UsersTest {
             when (request.url.fullPath) {
                 "/api/v1/users" -> {
                     val responseHeaders = headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))
-                    respond(Json.stringify(UserProfile.serializer(), userToCreate), headers = responseHeaders)
+                    respond(Json.encodeToString(UserProfile.serializer(), userToCreate), headers = responseHeaders)
                 }
                 else -> error("Error for else %s".format(request.url.fullPath))
             }
