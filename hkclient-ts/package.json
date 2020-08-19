@@ -1,0 +1,10 @@
+{
+  "name": "hkclient-ts",
+  "version": "1.0.0",
+  "description": "Client SDK",
+  "main": "index.ts",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.9.7"
+  }
+}

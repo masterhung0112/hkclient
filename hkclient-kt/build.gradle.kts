@@ -1,7 +1,7 @@
 plugins {
-    kotlin("multiplatform") version "1.4.0"
-    id("net.akehurst.kotlin.kt2ts") version "1.6.0"
-    kotlin("plugin.serialization") version "1.4.0"
+    kotlin("multiplatform")
+    kotlin("plugin.serialization")
+    id("net.akehurst.kotlin.kt2ts")
 }
 
 group = "org.example"
@@ -27,7 +27,7 @@ kotlin {
     jvm() {
 
     }
-    /* Targets configuration omitted. 
+    /* Targets configuration omitted.
     *  To find out how to configure the targets, please follow the link:
     *  https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#setting-up-targets */
 
