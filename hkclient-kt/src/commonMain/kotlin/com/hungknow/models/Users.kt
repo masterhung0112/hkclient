@@ -2,6 +2,12 @@ package com.hungknow.models
 
 import kotlinx.serialization.Serializable
 
+class ChangeState<T> {
+    fun copyIfChange(newCopy: T) {
+//        newCopy.equ
+    }
+}
+
 @Serializable
 data class UserProfile (
     val id: String = "",

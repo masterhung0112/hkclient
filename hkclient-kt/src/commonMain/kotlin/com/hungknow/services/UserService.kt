@@ -9,67 +9,44 @@ import org.reduxkotlin.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KFunction
 
-data class ActionHelp(val action: Any, val payload: Any)
+interface ActionHelp<D> {
+    open fun process(previousState: D): D
+}
 
-class UserService : CoroutineScope {
+class UserService(val hkClient: HkClient) : IStateService<UsersState>, CoroutineScope {
 
-    lateinit var userReducer: Reducer<UsersState>
-    lateinit var actionMap: Map<String, KFunction<Any>>
-    val receivedProfile: (userProfile: UserProfile) -> Unit = {
-        this.store.dispatch(ActionHelp(this, it))
-    }
+//    lateinit var userReducer: Reducer<UsersState>
+//    lateinit var actionMap: Map<String, KFunction<Any>>
+
     lateinit var store: Store<GlobalState>
-    lateinit var hkClient: HkClient
 
-    constructor(store: Store<GlobalState>, hkClient: HkClient) {
-        // Register the reducers
-        userReducer = combineReducers(::exampleReducer, ::exampleReducer1)
-        actionMap = mapOf(
-                "hello" to ::exampleReducer
-        )
-        var f = actionMap.get("hello")
-//        f!!.call("hello")
+    override fun setGlobalStore(store: Store<GlobalState>) {
         this.store = store
-        this.hkClient = hkClient
     }
 
-    fun exampleReducer(previousState: UsersState, action: Any): UsersState {
-        val helperAction = action as ActionHelp
-        when (helperAction.action) {
-            receivedProfile -> {
-                getReceivedProfile(previousState.profiles, helperAction.payload as UserProfile)
+    override fun mainReducer(s: UsersState, action: Any): UsersState {
+        if (action is ActionHelp<*>) {
+            when (action) {
+                is ReceivedProfile -> {
+                    return s.copy(profiles = action.process(s.profiles))
+                }
             }
         }
-        return previousState
+
+        return s
     }
 
-    fun exampleReducer1(previousState: UsersState, action: Any): UsersState {
-        return previousState
+    data class ReceivedProfile(val userProfile: UserProfile): ActionHelp<Map<String, UserProfile>> {
+        override fun process(s: Map<String, UserProfile>): Map<String, UserProfile> {
+            return s.plus(Pair(userProfile.id, userProfile))
+        }
     }
-
-    fun createReducersCallable() {
-
-    }
-
-    //
-    fun getReceivedProfile(previousState: Map<String, UserProfile>, userProfile: UserProfile): Map<String, UserProfile> {
-        return previousState.plus(Pair(userProfile.id, userProfile.copy()))
-    }
-//
-//    var receivedProfile: UserProfile
-//        get() { return UserProfile()
-//        }
-//        set(value) {
-//            this.store.dispatch(mapOf(
-//                    "data" to "hello"
-//            ))
-//        }
 
     fun createUser(user: UserProfile, token: String? = null, inviteId: String? = null, redirect: String? = null) {
         var action: Thunk<GlobalState> = { dispatch, getState, extraArg ->
             hkClient.createUser(user, token, inviteId, redirect) {
                 onSuccess {
-                    receivedProfile(it)
+                    store.dispatch(ReceivedProfile(it))
                 }
                 onFailure {
                     // force log out if
