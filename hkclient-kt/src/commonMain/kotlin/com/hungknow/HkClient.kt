@@ -35,7 +35,8 @@ class HkClient(val httpClientEngine: HttpClientEngine) : CoroutineScope, Closeab
     override val coroutineContext: CoroutineContext = httpClientEngine.coroutineContext + Job(httpClientEngine.coroutineContext[Job])
 
     @JsName("createUser")
-    suspend fun createUser(user: UserProfile, token: String? = null, inviteId: String? = null, redirect: String? = null): UserProfile {
+    fun createUser(user: UserProfile, token: String? = null, inviteId: String? = null, redirect: String? = null, completionHandler: (Result<UserProfile>).() -> Unit
+    ) {
         //this.trackEvent('api', 'api_users_create');
 
         val queryParams = hashMapOf<String, String>()
@@ -43,8 +44,9 @@ class HkClient(val httpClientEngine: HttpClientEngine) : CoroutineScope, Closeab
         token?.let { queryParams.put("t", token) }
         inviteId?.let { queryParams.put("iid", inviteId) }
         redirect?.let { queryParams.put("r", redirect) }
-
-        return doPost("${this.getUsersRoute()}${buildQueryString(queryParams)}", user)
+        launch {
+            doPost("${getUsersRoute()}${buildQueryString(queryParams)}", user, completionHandler)
+        }
     }
 
     /*****
@@ -75,12 +77,11 @@ class HkClient(val httpClientEngine: HttpClientEngine) : CoroutineScope, Closeab
 ////        const headers = parseAndMergeNestedHeaders(response.headers);
 //
 //    }
-    suspend inline fun <reified T> doPost(urlPath: String, bodyString: Any): T {
-        var clientResponse = doPostWithResponse<T>(urlPath, bodyString)
-        return clientResponse.data
+    suspend inline fun <reified T> doPost(urlPath: String, bodyString: Any, completionHandler: (Result<T>).() -> Unit) {
+        doPostWithResponse<T>(urlPath, bodyString, completionHandler)
     }
 
-    suspend inline fun <reified T> doPostWithResponse(urlPath: String, bodyString: Any): ClientResponse<T> {
+    suspend inline fun <reified T> doPostWithResponse(urlPath: String, bodyString: Any, completionHandler: (Result<T>).() -> Unit) {
         // Call URL
 //        const response = await fetch(url, this.getOptions(options));
         val message = this.httpClient.post<T> {
@@ -89,10 +90,7 @@ class HkClient(val httpClientEngine: HttpClientEngine) : CoroutineScope, Closeab
             body = bodyString
         }
 
-        return ClientResponse(
-                data = message,
-                headers = mapOf()
-        )
+        completionHandler(Result.success(message))
 //        const headers = parseAndMergeNestedHeaders(response.headers);
 
     }

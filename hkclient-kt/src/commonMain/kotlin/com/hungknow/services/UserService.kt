@@ -11,7 +11,7 @@ import kotlin.reflect.KFunction
 
 data class ActionHelp(val action: Any, val payload: Any)
 
-class UserService: CoroutineScope {
+class UserService : CoroutineScope {
 
     lateinit var userReducer: Reducer<UsersState>
     lateinit var actionMap: Map<String, KFunction<Any>>
@@ -35,7 +35,7 @@ class UserService: CoroutineScope {
 
     fun exampleReducer(previousState: UsersState, action: Any): UsersState {
         val helperAction = action as ActionHelp
-        when(helperAction.action) {
+        when (helperAction.action) {
             receivedProfile -> {
                 getReceivedProfile(previousState.profiles, helperAction.payload as UserProfile)
             }
@@ -50,7 +50,8 @@ class UserService: CoroutineScope {
     fun createReducersCallable() {
 
     }
-//
+
+    //
     fun getReceivedProfile(previousState: Map<String, UserProfile>, userProfile: UserProfile): Map<String, UserProfile> {
         return previousState.plus(Pair(userProfile.id, userProfile.copy()))
     }
@@ -64,22 +65,17 @@ class UserService: CoroutineScope {
 //            ))
 //        }
 
-    fun createUser(user: UserProfile, token: String? = null, inviteId: String? = null, redirect: String? = null): UserProfile? {
-        var userProfile: UserProfile? = null
+    fun createUser(user: UserProfile, token: String? = null, inviteId: String? = null, redirect: String? = null) {
         var action: Thunk<GlobalState> = { dispatch, getState, extraArg ->
-            var created: UserProfile? = null
-
-            try {
-                val one = async {
-                    created = hkClient.createUser(user, token, inviteId, redirect)
-                    receivedProfile(created!!)
-
+            hkClient.createUser(user, token, inviteId, redirect) {
+                onSuccess {
+                    receivedProfile(it)
                 }
-                one.await()
-            } catch (error: Exception) {
-//                forceLogoutIfNecessary(error, dispatch, getState);
-//                dispatch(logError(error));
-                throw error
+                onFailure {
+                    // force log out if
+//                            forceLogoutIfNecessary(error, dispatch, getState);
+//                            dispatch(logError(error));
+                }
             }
 
 //            val profiles: {
@@ -90,12 +86,9 @@ class UserService: CoroutineScope {
 //            receivedProfile(created)
 //            dispatch({type: UserTypes.RECEIVED_PROFILES, data: profiles});
 
-            userProfile = created
-//            created as Any
             Unit
         }
         this.store.dispatch(action)
-        return userProfile
     }
 
     override val coroutineContext: CoroutineContext
