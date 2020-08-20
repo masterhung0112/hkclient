@@ -1,0 +1,34 @@
+{
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ],
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "lib": [],
+    "allowJs": false,
+    "jsx": "react",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "removeComments": true,
+    "noEmit": false,
+    "importHelpers": true,
+    "downlevelIteration": true,
+    "strict": false,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {},
+    "esModuleInterop": true,
+
+
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}

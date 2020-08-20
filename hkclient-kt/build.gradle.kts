@@ -1,24 +1,11 @@
 plugins {
-    kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("net.akehurst.kotlin.kt2ts")
 }
-
-group = "org.example"
-version = "1.0-SNAPSHOT"
 
 val ktor_version:String by project
 val serialization_version:String by project
 val coroutines_version:String by project
 val redux_version:String by project
-
-repositories {
-    google()
-    mavenCentral()
-    jcenter()
-    maven("https://kotlin.bintray.com/kotlinx")
-    maven("https://kotlin.bintray.com/ktor")
-}
 
 kotlin {
     js("js") {

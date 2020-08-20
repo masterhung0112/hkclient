@@ -6,5 +6,8 @@
   "license": "MIT",
   "devDependencies": {
     "typescript": "^3.9.7"
+  },
+  "scripts": {
+    "build": "echo 0"
   }
 }

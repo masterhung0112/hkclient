@@ -1,7 +1,9 @@
 build/
 target/
 .gradle/
+.gradle-build/
 node_modules/
 .idea/
 local.properties
 yarn.lock
+yarn-error.log
