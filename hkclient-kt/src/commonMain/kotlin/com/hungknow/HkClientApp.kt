@@ -44,7 +44,7 @@ class HkClientApp {
 
     val dummyReducer: (state: GlobalState, action: Any) -> GlobalState = { s, a -> s }
 
-    constructor(httpClientEngine: HttpClientEngine) {
+    constructor(httpClientEngine: HttpClientEngine?) {
         hkClient = HkClient(httpClientEngine)
         userService = UserService(this.hkClient)
         globalStore = createStore<GlobalState>(::globalReducer, GlobalState(), applyMiddleware(createThunkMiddleware()))

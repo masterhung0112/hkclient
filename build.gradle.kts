@@ -1,6 +1,3 @@
-group = "org.example"
-version = "1.0-SNAPSHOT"
-
 repositories {
     mavenCentral()
     google()
@@ -35,6 +32,7 @@ allprojects {
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "net.akehurst.kotlin.kt2ts")
+    apply(from = "../workaround_to_use_1_4_libs_in_1_3.gradle.kts")
 
     configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
         sourceSets {
@@ -46,11 +44,12 @@ subprojects {
         }
 
         // we want to build for a JS target
-        js("js") {
+        js() {
             browser()
+            binaries.executable()
         }
         // we want to build for a jvm target
-        jvm("jvm") {
+        jvm() {
             // by default kotlin uses JavaVersion 1.6
 //            val main by compilations.getting {
 //                kotlinOptions {

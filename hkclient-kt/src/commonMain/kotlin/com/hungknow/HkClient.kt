@@ -23,18 +23,26 @@ data class ClientResponse<T>(
         val data: T
 );
 
-class HkClient(val httpClientEngine: HttpClientEngine) : CoroutineScope, Closeable {
+class HkClient(val httpClientEngine: HttpClientEngine?) : CoroutineScope, Closeable {
     var token = ""
 
     val httpClient by lazy {
-        HttpClient(httpClientEngine) {
-            install(JsonFeature) {
-                serializer = KotlinxSerializer()
+        if (httpClientEngine != null) {
+            HttpClient(httpClientEngine) {
+                install(JsonFeature) {
+                    serializer = KotlinxSerializer()
+                }
+            }
+        } else {
+            HttpClient() {
+                install(JsonFeature) {
+                    serializer = KotlinxSerializer()
+                }
             }
         }
     }
 
-    override val coroutineContext: CoroutineContext = httpClientEngine.coroutineContext + Job(httpClientEngine.coroutineContext[Job])
+    override val coroutineContext: CoroutineContext = httpClient.coroutineContext + Job(httpClient.coroutineContext[Job])
 
     @JsName("createUser")
     fun createUser(user: UserProfile, token: String? = null, inviteId: String? = null, redirect: String? = null, completionHandler: (Result<UserProfile>).() -> Unit

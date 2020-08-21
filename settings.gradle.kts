@@ -1,4 +1,3 @@
-rootProject.name = "hkclient"
 pluginManagement {
     repositories {
         mavenLocal()
@@ -9,5 +8,6 @@ pluginManagement {
     }
 }
 
+rootProject.name = "hkclient"
 include("hkclient-kt")
 include("hkclient-ts")

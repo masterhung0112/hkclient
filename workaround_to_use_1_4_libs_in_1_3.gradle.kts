@@ -2,7 +2,7 @@ val pluginAction: Plugin<*>.() -> Unit = {
     val pluginVersion = try {
         this.javaClass.getMethod("getKotlinPluginVersion").invoke(this) as String
     } catch(e: Exception) { null }
-    if (pluginVersion != null && pluginVersion.startsWith("1.3")) {
+    if (pluginVersion != null && pluginVersion.startsWith("1.4")) {
         val jsCompilerAttr = Attribute.of("org.jetbrains.kotlin.js.compiler", String::class.java)
         project.dependencies.attributesSchema.attribute(jsCompilerAttr) {
             this.disambiguationRules.add(KotlinJsCompilerDisambiguationRule::class.java)
