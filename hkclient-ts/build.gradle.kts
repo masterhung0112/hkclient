@@ -1,5 +1,4 @@
 dependencies {
-    // only need a direct dependency on these, the rest are transitively discovered
     nodeKotlin(project(":hkclient-kt"))
 }
 
@@ -7,6 +6,8 @@ dependencies {
 // define these locations because they are used in multiple places
 val ngSrcDir = project.layout.projectDirectory.dir("./")
 val ngOutDir = project.layout.buildDirectory.dir("./")
+
+val coroutines_version:String by project
 
 kt2ts {
     nodeSrcDirectory.set(ngSrcDir)
@@ -29,12 +30,30 @@ kt2ts {
 
     // we use a different (to default) name for the kotlin-jvm target
 //    jvmTargetName.set("jvm")
-}
 
-val ktor_version:String by project
-val serialization_version:String by project
-val coroutines_version:String by project
-val redux_version:String by project
+        generateThirdPartyModules {
+        register("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version") {
+            includeOnly.set(listOf("org.jetbrains.kotlinx:kotlinx-coroutines-core"))
+            moduleGroup.set("")
+            moduleName.set("kotlinx-coroutines-core")
+            mainFileName.set("kotlinx-coroutines-core.js")
+            tgtName.set("kotlinx-coroutines-core")
+            classPatterns.set(listOf(
+                    "kotlinx.coroutines.internal.OpDescriptor",
+                    "kotlinx.coroutines.internal.AtomicOp",
+                    "kotlinx.coroutines.internal.AtomicDesc",
+                    "kotlinx.coroutines.DisposableHandle",
+                    "kotlinx.coroutines.channels.Channel",
+                    "kotlinx.coroutines.channels.SendChannel",
+                    "kotlinx.coroutines.channels.ReceiveChannel",
+                    "kotlinx.coroutines.channels.ChannelIterator",
+                    "kotlinx.coroutines.selects.SelectInstance",
+                    "kotlinx.coroutines.selects.SelectClause1",
+                    "kotlinx.coroutines.selects.SelectClause2"
+            ))
+        }
+    }
+}
 
 //
 //// attach the build angular code as a 'resource' so it is added to the jar

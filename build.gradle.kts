@@ -12,15 +12,15 @@ plugins {
     id("net.akehurst.kotlin.kt2ts") version "1.6.1" apply false
 }
 
+val version_project: String by project
+val group_project = "${rootProject.name}"
+
 allprojects {
 
     repositories {
         mavenCentral()
         jcenter()
     }
-
-    val version_project: String by project
-    val group_project = "com.hungknow"
 
     group = group_project
     version = version_project
@@ -33,6 +33,9 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "net.akehurst.kotlin.kt2ts")
     apply(from = "../workaround_to_use_1_4_libs_in_1_3.gradle.kts")
+
+    group = group_project
+    version = version_project
 
     configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
         sourceSets {
