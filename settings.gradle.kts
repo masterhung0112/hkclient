@@ -8,6 +8,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = "hkclient"
+rootProject.name = "com.hungknow"
 include("hkclient-kt")
 include("hkclient-ts")

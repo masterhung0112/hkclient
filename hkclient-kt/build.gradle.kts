@@ -86,14 +86,14 @@ kotlin {
     }
 }
 
-val ngSrcDir = project.layout.projectDirectory.dir("../hkclient-ts/src/react")
-val ngOutDir = project.layout.buildDirectory.dir("react")
+//val ngSrcDir = project.layout.projectDirectory.dir("../hkclient-ts/src/react")
+//val ngOutDir = project.layout.buildDirectory.dir("")
 
 // configure the kt2ts plugin
 kt2ts {
 //    jvmTargetName.set("jvm")
-    nodeSrcDirectory.set(ngSrcDir)
-    nodeOutDirectory.set(ngOutDir)
+//    nodeSrcDirectory.set(ngSrcDir)
+//    nodeOutDirectory.set(ngOutDir)
 
     classPatterns.set(listOf(
             "com.hungknow.*"
