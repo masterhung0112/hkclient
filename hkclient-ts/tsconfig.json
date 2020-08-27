@@ -31,6 +31,9 @@
       "types/*": [
         "src/types/*"
       ],
+      "store/*": [
+        "src/store/*"
+      ],
       "utils/*": [
         "src/utils/*"
       ],

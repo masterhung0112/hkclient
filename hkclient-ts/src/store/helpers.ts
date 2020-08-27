@@ -1,9 +1,10 @@
 import { Reducer, combineReducers } from 'redux'
-import reducerRegistry from './reducerRegistry'
+import reducerRegistry from './reducer_registry'
 import { Action, enableBatching } from 'types/actions'
 import { General } from '../constants'
 
 export const offlineConfig = {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   effect: (effect: Function, action: Action) => {
     if (typeof effect !== 'function') {
       throw new Error('Offline Action: effect must be a function.')

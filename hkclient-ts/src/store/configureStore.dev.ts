@@ -4,11 +4,12 @@ import { Reducer, Action } from 'redux'
 import { GlobalState } from 'types/store'
 import deepFreezeAndThrowOnMutation from 'utils/deep_freeze'
 import initialState from './initial_state'
-import { createOfflineReducer, networkStatusChangedAction, offlineCompose } from 'redux-offline'
-import defaultOfflineConfig from 'redux-offline/lib/defaults'
+import { createOffline } from '@redux-offline/redux-offline'
+import defaultOfflineConfig from '@redux-offline/redux-offline/lib/defaults'
 import { createMiddleware } from './middleware'
 import serviceReducer from '../reducers'
 import devTools from 'remote-redux-devtools'
+import reducerRegistry from './reducer_registry'
 
 const windowAny = window as any
 
@@ -35,12 +36,19 @@ export default function configureServiceStore(
   const baseState = Object.assign({}, initialState, preloadedState)
 
   const loadReduxDevtools = process.env.NODE_ENV !== 'test'
+  const { middleware, enhanceReducer, enhanceStore } = createOffline(baseOfflineConfig)
+
+  const composeEnhancers = loadReduxDevtools ? devToolsEnhancer() : redux.compose
 
   const store = redux.createStore(
-    createOfflineReducer(createDevReducer(baseState, serviceReducer, appReducer)),
+    enhanceReducer(createDevReducer(baseState, serviceReducer, appReducer)),
     baseState,
-    offlineCompose(baseOfflineConfig)(createMiddleware(clientOptions), loadReduxDevtools ? [devToolsEnhancer()] : [])
+    composeEnhancers(redux.applyMiddleware(middleware, ...createMiddleware(clientOptions)), enhanceStore)
   )
+
+  reducerRegistry.setChangeListener((reducers: any) => {
+    store.replaceReducer(enhanceReducer(createDevReducer(baseState, reducers)))
+  })
 
   return store
 }
