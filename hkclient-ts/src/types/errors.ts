@@ -9,4 +9,4 @@ export type ServerError = {
     message: string
     status_code?: number
     url?: string
-};
+}

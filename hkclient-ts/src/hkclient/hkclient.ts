@@ -48,7 +48,7 @@ export default class HkClient {
     }
 
     get usersRoute() {
-        return `${this.baseRoute}/users`;
+        return `${this.baseRoute}/users`
     }
 
     getUserRoute(userId: string) {
@@ -62,24 +62,24 @@ export default class HkClient {
     createUser = (user: UserProfile, token: string, inviteId: string, redirect: string) => {
         // this.trackEvent('api', 'api_users_create');
 
-        const queryParams: any = {};
+        const queryParams: any = {}
 
         if (token) {
-            queryParams.t = token;
+            queryParams.t = token
         }
 
         if (inviteId) {
-            queryParams.iid = inviteId;
+            queryParams.iid = inviteId
         }
 
         if (redirect) {
-            queryParams.r = redirect;
+            queryParams.r = redirect
         }
 
         return this.doFetch<UserProfile>(
             `${this.usersRoute}${buildQueryString(queryParams)}`,
             {method: 'post', body: JSON.stringify(user)},
-        );
+        )
     }
 
     login = (loginId: string, password: string, token = '', deviceId = '', ldapOnly = false) => {
@@ -88,7 +88,7 @@ export default class HkClient {
             login_id: loginId,
             password,
             token,
-        };
+        }
 
         return this.doFetch<UserProfile>(
             `${this.usersRoute}/login`,
@@ -118,32 +118,32 @@ export default class HkClient {
         }
 
         if (this.token) {
-            headers[HEADER_AUTH] = `${HEADER_BEARER} ${this.token}`;
+            headers[HEADER_AUTH] = `${HEADER_BEARER} ${this.token}`
         }
 
         if (this.includeCookies) {
-            newOptions.credentials = 'include';
+            newOptions.credentials = 'include'
         }
 
         if (newOptions.headers) {
-            Object.assign(headers, newOptions.headers);
+            Object.assign(headers, newOptions.headers)
         }
 
         return {
             ...newOptions,
             headers,
-        };
+        }
     }
 
     doFetch = async <T>(url: string, options: Options): Promise<T> => {
-        const {data} = await this.doFetchWithResponse<T>(url, options);
+        const {data} = await this.doFetchWithResponse<T>(url, options)
 
         return data
     }
 
     doFetchWithResponse = async <T>(url: string, options: Options): Promise<ClientResponse<T>> => {
         const response = await fetch(url, this.getOptions(options))
-        const headers = parseAndMergeNestedHeaders(response.headers);
+        const headers = parseAndMergeNestedHeaders(response.headers)
 
         let data
         try {
@@ -153,9 +153,9 @@ export default class HkClient {
         }
 
         if (headers.has(HEADER_X_VERSION_ID) && !headers.get('Cache-Control')) {
-            const serverVersion = headers.get(HEADER_X_VERSION_ID);
+            const serverVersion = headers.get(HEADER_X_VERSION_ID)
             if (serverVersion && this.serverVersion !== serverVersion) {
-                this.serverVersion = serverVersion;
+                this.serverVersion = serverVersion
             }
         }
 
@@ -167,10 +167,10 @@ export default class HkClient {
             }
         }
 
-        const msg = data.message || '';
+        const msg = data.message || ''
 
         if (this.logToConsole) {
-            console.error(msg); // eslint-disable-line no-console
+            console.error(msg) // eslint-disable-line no-console
         }
 
         throw new ClientError(this.url, {
@@ -183,45 +183,45 @@ export default class HkClient {
 }
 
 export class ClientError extends Error implements ServerError {
-    url?: string;
+    url?: string
     intl?: {
         id: string;
         defaultMessage: string;
         values?: any;
-    };
-    server_error_id?: string;
-    status_code?: number;
+    }
+    server_error_id?: string
+    status_code?: number
 
     constructor(baseUrl: string, data: ServerError) {
-        super(data.message + ': ' + cleanUrlForLogging(baseUrl, data.url || ''));
+        super(data.message + ': ' + cleanUrlForLogging(baseUrl, data.url || ''))
 
-        this.message = data.message;
-        this.url = data.url;
-        this.intl = data.intl;
-        this.server_error_id = data.server_error_id;
-        this.status_code = data.status_code;
+        this.message = data.message
+        this.url = data.url
+        this.intl = data.intl
+        this.server_error_id = data.server_error_id
+        this.status_code = data.status_code
 
         // Ensure message is treated as a property of this class when object spreading. Without this,
         // copying the object by using `{...error}` would not include the message.
-        Object.defineProperty(this, 'message', {enumerable: true});
+        Object.defineProperty(this, 'message', {enumerable: true})
     }
 }
 
 function parseAndMergeNestedHeaders(originalHeaders: any) {
     const headers = new Map()
-    let nestedHeaders = new Map();
+    let nestedHeaders = new Map()
     originalHeaders.forEach((val: string, key: string) => {
-        const capitalizedKey = key.replace(/\b[a-z]/g, (l) => l.toUpperCase());
-        let realVal = val;
+        const capitalizedKey = key.replace(/\b[a-z]/g, (l) => l.toUpperCase())
+        let realVal = val
         if (val && val.match(/\n\S+:\s\S+/)) {
-            const nestedHeaderStrings = val.split('\n');
-            realVal = nestedHeaderStrings.shift() as string;
+            const nestedHeaderStrings = val.split('\n')
+            realVal = nestedHeaderStrings.shift() as string
             const moreNestedHeaders = new Map(
                 nestedHeaderStrings.map((h: any) => h.split(/:\s/)),
-            );
-            nestedHeaders = new Map([...nestedHeaders, ...moreNestedHeaders]);
+            )
+            nestedHeaders = new Map([...nestedHeaders, ...moreNestedHeaders])
         }
-        headers.set(capitalizedKey, realVal);
+        headers.set(capitalizedKey, realVal)
     })
-    return new Map([...headers, ...nestedHeaders]);
+    return new Map([...headers, ...nestedHeaders])
 }

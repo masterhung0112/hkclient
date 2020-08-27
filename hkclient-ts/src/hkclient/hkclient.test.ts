@@ -24,7 +24,16 @@ describe('HkClient', () => {
 
             await client.getMe()
 
+            // Change the version of server version
             assert.equal(client.serverVersion, '5.0.0.5.0.0.abc123')
+
+            nock(client.baseRoute).
+                get('/users/me').
+                reply(200, '{}', {[HEADER_X_VERSION_ID]: '5.3.0.5.3.0.abc123'})
+
+            await client.getMe()
+
+            assert.equal(client.serverVersion, '5.3.0.5.3.0.abc123')
         })
     })
 })
@@ -42,7 +51,7 @@ describe('ClientError', () => {
             url: 'https://example.com/api/v4/error',
         })
 
-        const copy = {...error};
+        const copy = {...error}
         assert.strictEqual(copy.message, error.message)
         assert.strictEqual(copy.intl, error.intl)
         assert.strictEqual(copy.server_error_id, error.server_error_id)
