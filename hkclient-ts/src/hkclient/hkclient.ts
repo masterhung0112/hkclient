@@ -6,8 +6,9 @@ import {
     Options, ClientResponse
 } from 'types/hkclient'
 import { ServerError } from 'types/errors'
-import {cleanUrlForLogging} from 'utils/sentry';
-import { buildQueryString } from 'utils/helpers';
+import { cleanUrlForLogging } from 'utils/sentry'
+import { buildQueryString } from 'utils/helpers'
+import fetch from 'cross-fetch'
 
 const HEADER_AUTH = 'Authorization'
 const HEADER_BEARER = 'BEARER'
@@ -17,27 +18,9 @@ const HEADER_X_CLUSTER_ID = 'X-Cluster-Id'
 const HEADER_X_CSRF_TOKEN = 'X-CSRF-Token'
 export const HEADER_X_VERSION_ID = 'X-Version-Id'
 
-function parseAndMergeNestedHeaders(originalHeaders: any) {
-    const headers = new Map()
-    let nestedHeaders = new Map();
-    originalHeaders.forEach((val: string, key: string) => {
-        const capitalizedKey = key.replace(/\b[a-z]/g, (l) => l.toUpperCase());
-        let realVal = val;
-        if (val && val.match(/\n\S+:\s\S+/)) {
-            const nestedHeaderStrings = val.split('\n');
-            realVal = nestedHeaderStrings.shift() as string;
-            const moreNestedHeaders = new Map(
-                nestedHeaderStrings.map((h: any) => h.split(/:\s/)),
-            );
-            nestedHeaders = new Map([...nestedHeaders, ...moreNestedHeaders]);
-        }
-        headers.set(capitalizedKey, realVal);
-    })
-    return new Map([...headers, ...nestedHeaders]);
-}
-
 export default class HkClient {
     logToConsole = false
+    serverVersionVal = ''
     urlVal = ''
     urlVersion = '/api/v1'
     defaultHeaders: {[x: string]: string} = {}
@@ -52,12 +35,24 @@ export default class HkClient {
         this.urlVal = value
     }
 
+    get serverVersion() {
+        return this.serverVersionVal
+    }
+
+    set serverVersion(value: string) {
+        this.serverVersionVal = value
+    }
+
     get baseRoute() {
         return `${this.url}${this.urlVersion}`
     }
 
     get usersRoute() {
         return `${this.baseRoute}/users`;
+    }
+
+    getUserRoute(userId: string) {
+        return `${this.usersRoute}/${userId}`
     }
 
     /***
@@ -98,6 +93,13 @@ export default class HkClient {
         return this.doFetch<UserProfile>(
             `${this.usersRoute}/login`,
             {method: 'post', body: JSON.stringify(body)}
+        )
+    }
+
+    getMe = () => {
+        return this.doFetch<UserProfile>(
+            `${this.getUserRoute('me')}`,
+            {method: 'get'}
         )
     }
 
@@ -150,6 +152,13 @@ export default class HkClient {
             // Throw exception when fail to convert message into json
         }
 
+        if (headers.has(HEADER_X_VERSION_ID) && !headers.get('Cache-Control')) {
+            const serverVersion = headers.get(HEADER_X_VERSION_ID);
+            if (serverVersion && this.serverVersion !== serverVersion) {
+                this.serverVersion = serverVersion;
+            }
+        }
+
         if (response.ok) {
             return {
                 response,
@@ -196,4 +205,23 @@ export class ClientError extends Error implements ServerError {
         // copying the object by using `{...error}` would not include the message.
         Object.defineProperty(this, 'message', {enumerable: true});
     }
+}
+
+function parseAndMergeNestedHeaders(originalHeaders: any) {
+    const headers = new Map()
+    let nestedHeaders = new Map();
+    originalHeaders.forEach((val: string, key: string) => {
+        const capitalizedKey = key.replace(/\b[a-z]/g, (l) => l.toUpperCase());
+        let realVal = val;
+        if (val && val.match(/\n\S+:\s\S+/)) {
+            const nestedHeaderStrings = val.split('\n');
+            realVal = nestedHeaderStrings.shift() as string;
+            const moreNestedHeaders = new Map(
+                nestedHeaderStrings.map((h: any) => h.split(/:\s/)),
+            );
+            nestedHeaders = new Map([...nestedHeaders, ...moreNestedHeaders]);
+        }
+        headers.set(capitalizedKey, realVal);
+    })
+    return new Map([...headers, ...nestedHeaders]);
 }

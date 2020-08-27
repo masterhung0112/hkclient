@@ -17,3 +17,5 @@ class TestHelper {
         return client;
     }
 }
+
+export default new TestHelper()

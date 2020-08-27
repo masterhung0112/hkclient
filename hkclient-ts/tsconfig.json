@@ -36,6 +36,9 @@
       ],
       "hkclient/*": [
         "src/hkclient/*"
+      ],
+      "test/*": [
+        "src/test/*"
       ]
     },
     "esModuleInterop": true,

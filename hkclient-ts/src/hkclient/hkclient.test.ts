@@ -1,17 +1,31 @@
-import { ClientError } from 'hkclient/hkclient'
+import { ClientError, HEADER_X_VERSION_ID } from './hkclient'
 import assert from 'assert'
+import nock from 'nock'
+import TestHelper from 'test/test_helper'
 
 describe('HkClient', () => {
     beforeAll(() => {
-
+        if (!nock.isActive()) {
+            nock.activate()
+        }
     })
 
     afterAll(() => {
-
+        nock.restore()
     })
 
     describe('doFetchWithResponse', () => {
+        it('serverVersion should set from response header', async () => {
+            const client = TestHelper.createClient()
 
+            assert.equal(client.serverVersion, '')
+
+            nock(client.baseRoute).get('/users/me').reply(200, '{}', {[HEADER_X_VERSION_ID]: '5.0.0.5.0.0.abc123'})
+
+            await client.getMe()
+
+            assert.equal(client.serverVersion, '5.0.0.5.0.0.abc123')
+        })
     })
 })
 

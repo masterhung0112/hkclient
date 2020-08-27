@@ -5,6 +5,9 @@
   "main": "index.ts",
   "license": "MIT",
   "devDependencies": {
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-typescript": "^7.10.4",
+    "@rollup/plugin-babel": "^5.2.0",
     "@types/jest": "^26.0.10",
     "jest": "^26.4.2",
     "nock": "^13.0.4",
@@ -16,5 +19,7 @@
   "scripts": {
     "build": "echo 0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "cross-fetch": "^3.0.5"
+  }
 }
