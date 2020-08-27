@@ -6,6 +6,8 @@ import {
     Options, ClientResponse
 } from 'types/hkclient'
 import { ServerError } from 'types/errors'
+import {cleanUrlForLogging} from 'utils/sentry';
+import { buildQueryString } from 'utils/helpers';
 
 const HEADER_AUTH = 'Authorization'
 const HEADER_BEARER = 'BEARER'
@@ -36,12 +38,19 @@ function parseAndMergeNestedHeaders(originalHeaders: any) {
 
 export default class HkClient {
     logToConsole = false
-    url = ''
+    urlVal = ''
     urlVersion = '/api/v1'
     defaultHeaders: {[x: string]: string} = {}
     token = ''
     includeCookies = true
 
+    get url() {
+        return this.urlVal
+    }
+
+    set url(value: string) {
+        this.urlVal = value
+    }
 
     get baseRoute() {
         return `${this.url}${this.urlVersion}`
@@ -49,6 +58,33 @@ export default class HkClient {
 
     get usersRoute() {
         return `${this.baseRoute}/users`;
+    }
+
+    /***
+     * User Routes
+     */
+
+    createUser = (user: UserProfile, token: string, inviteId: string, redirect: string) => {
+        // this.trackEvent('api', 'api_users_create');
+
+        const queryParams: any = {};
+
+        if (token) {
+            queryParams.t = token;
+        }
+
+        if (inviteId) {
+            queryParams.iid = inviteId;
+        }
+
+        if (redirect) {
+            queryParams.r = redirect;
+        }
+
+        return this.doFetch<UserProfile>(
+            `${this.usersRoute}${buildQueryString(queryParams)}`,
+            {method: 'post', body: JSON.stringify(user)},
+        );
     }
 
     login = (loginId: string, password: string, token = '', deviceId = '', ldapOnly = false) => {
@@ -121,9 +157,20 @@ export default class HkClient {
                 data,
             }
         }
-    }
 
-    
+        const msg = data.message || '';
+
+        if (this.logToConsole) {
+            console.error(msg); // eslint-disable-line no-console
+        }
+
+        throw new ClientError(this.url, {
+            message: msg,
+            server_error_id: data.id,
+            status_code: data.status_code,
+            url,
+        })
+    }   
 }
 
 export class ClientError extends Error implements ServerError {
