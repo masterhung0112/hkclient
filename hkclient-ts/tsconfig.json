@@ -9,7 +9,10 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "lib": [],
+    "lib": [
+      "dom",
+      "esnext"
+    ],
     "allowJs": false,
     "jsx": "react",
     "declaration": true,
@@ -24,10 +27,15 @@
     "strict": false,
     "moduleResolution": "node",
     "baseUrl": "./",
-    "paths": {},
+    "paths": {
+      "types/*": [
+        "src/types/*"
+      ],
+      "utils/*": [
+        "src/utils/*"
+      ]
+    },
     "esModuleInterop": true,
-
-
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   }

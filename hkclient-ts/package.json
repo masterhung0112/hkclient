@@ -5,12 +5,13 @@
   "main": "index.ts",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^3.9.7"
+    "@types/jest": "^26.0.10",
+    "typescript": "^3.9.7",
+    "tslib": "^2.0.1"
   },
   "scripts": {
     "build": "echo 0"
   },
   "dependencies": {
-    "@types/jest": "^26.0.10"
   }
 }
