@@ -13,6 +13,10 @@ class ReducerRegistry {
     return { ...this.reducers }
   }
 
+  setReducers = (reducers: Record<string, Reducer>) => {
+    this.reducers = reducers
+  }
+
   register(name, reducer) {
     this.reducers = { ...this.reducers, [name]: reducer }
     if (this.emitChange) {
