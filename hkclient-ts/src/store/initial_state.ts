@@ -6,7 +6,7 @@ const state: GlobalState = {
       currentUserId: '',
     },
   },
-  errors: [],
+  // errors: [],
 }
 
 export default state

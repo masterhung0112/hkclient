@@ -3,12 +3,13 @@ import { createTransform, persistStore } from 'redux-persist'
 
 import configureStore from '../store'
 
-export default async function testConfigureStore(preloadedState = undefined) {
+export default async function testConfigureStore(preloadedState = null) {
   const storageTransform = createTransform(
     () => ({}),
     () => ({})
   )
 
+  //TODO: Upgrade redux-persist to v6 (https://gist.github.com/jarvisluong/f14872b9c7ed00bc2afc89c4622e3b55)
   const offlineConfig = {
     detectNetwork: (callback) => callback(true),
     persist: (store, options) => {

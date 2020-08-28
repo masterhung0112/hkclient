@@ -4,5 +4,5 @@ export type GlobalState = {
   entities: {
     users: UsersState
   }
-  errors: Array<any>
+  // errors: Array<any>
 }
